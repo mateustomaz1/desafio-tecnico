@@ -145,6 +145,7 @@ class ApiClient {
     })
   }
 
+  // Products endpoints
   async getProducts(): Promise<Product[]> {
     if (typeof window !== "undefined") {
       const localProducts = localStorage.getItem("local-products")
@@ -154,6 +155,15 @@ class ApiClient {
   }
 
   async getProduct(id: string): Promise<{ data: Product }> {
+    if (typeof window !== "undefined") {
+      const localProducts = JSON.parse(localStorage.getItem("local-products") || "[]")
+      const product = localProducts.find((p: Product) => p.id === id)
+      if (product) {
+        return { data: product }
+      }
+    }
+
+    // Fallback to API call if not found locally
     return this.request<{ data: Product }>(`/products/${id}`)
   }
 
