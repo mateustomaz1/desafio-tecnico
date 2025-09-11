@@ -14,6 +14,86 @@ import { useAuthStore, useUIStore } from "@/lib/store"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Loader2, CheckCircle, XCircle } from "lucide-react"
 
+function PasswordStrengthBar({ score }: { score: number }) {
+  const getBarColor = (level: number) => {
+    if (score < level) return "bg-gray-200"
+    if (score === 4) return "bg-green-500"
+    if (score >= 3) return "bg-yellow-500"
+    return "bg-red-500"
+  }
+
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4].map((level) => (
+        <div key={level} className={`h-1 flex-1 rounded ${getBarColor(level)}`} />
+      ))}
+    </div>
+  )
+}
+
+function PasswordFeedback({ feedback }: { feedback: string[] }) {
+  if (!feedback.length) return null
+  return <div className="text-xs text-muted-foreground">Necessário: {feedback.join(", ")}</div>
+}
+
+function PhoneFields({
+  register,
+  errors,
+}: {
+  register: ReturnType<typeof useForm>["register"]
+  errors: any
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      <div className="space-y-2">
+        <Label htmlFor="country">País</Label>
+        <Input
+          id="country"
+          placeholder="BR"
+          {...register("phone.country")}
+          aria-invalid={errors.phone?.country ? "true" : "false"}
+          className={errors.phone?.country ? "border-destructive" : ""}
+        />
+        {errors.phone?.country && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.phone.country.message}
+          </p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="ddd">DDD</Label>
+        <Input
+          id="ddd"
+          placeholder="11"
+          {...register("phone.ddd")}
+          aria-invalid={errors.phone?.ddd ? "true" : "false"}
+          className={errors.phone?.ddd ? "border-destructive" : ""}
+        />
+        {errors.phone?.ddd && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.phone.ddd.message}
+          </p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="number">Telefone</Label>
+        <Input
+          id="number"
+          placeholder="999999999"
+          {...register("phone.number")}
+          aria-invalid={errors.phone?.number ? "true" : "false"}
+          className={errors.phone?.number ? "border-destructive" : ""}
+        />
+        {errors.phone?.number && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.phone.number.message}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -66,12 +146,14 @@ export function RegisterForm() {
     try {
       const response = await apiClient.register(data)
       apiClient.setToken(response.token)
+
+      const userName = response.user?.name || data.name
       setAuth(response.user, response.token)
 
       addNotification({
         type: "success",
         title: "Conta criada com sucesso",
-        message: `Bem-vindo, ${response.user.name}!`,
+        message: `Bem-vindo, ${userName}!`,
       })
 
       router.push("/dashboard")
@@ -136,53 +218,7 @@ export function RegisterForm() {
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <div className="space-y-2">
-              <Label htmlFor="country">País</Label>
-              <Input
-                id="country"
-                placeholder="BR"
-                {...register("phone.country")}
-                aria-invalid={errors.phone?.country ? "true" : "false"}
-                className={errors.phone?.country ? "border-destructive" : ""}
-              />
-              {errors.phone?.country && (
-                <p className="text-sm text-destructive" role="alert">
-                  {errors.phone.country.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ddd">DDD</Label>
-              <Input
-                id="ddd"
-                placeholder="11"
-                {...register("phone.ddd")}
-                aria-invalid={errors.phone?.ddd ? "true" : "false"}
-                className={errors.phone?.ddd ? "border-destructive" : ""}
-              />
-              {errors.phone?.ddd && (
-                <p className="text-sm text-destructive" role="alert">
-                  {errors.phone.ddd.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="number">Telefone</Label>
-              <Input
-                id="number"
-                placeholder="999999999"
-                {...register("phone.number")}
-                aria-invalid={errors.phone?.number ? "true" : "false"}
-                className={errors.phone?.number ? "border-destructive" : ""}
-              />
-              {errors.phone?.number && (
-                <p className="text-sm text-destructive" role="alert">
-                  {errors.phone.number.message}
-                </p>
-              )}
-            </div>
-          </div>
+          <PhoneFields register={register} errors={errors} />
 
           <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
@@ -209,27 +245,8 @@ export function RegisterForm() {
 
             {password && (
               <div className="space-y-2">
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4].map((level) => (
-                    <div
-                      key={level}
-                      className={`h-1 flex-1 rounded ${
-                        passwordStrength.score >= level
-                          ? passwordStrength.score === 4
-                            ? "bg-green-500"
-                            : passwordStrength.score >= 3
-                              ? "bg-yellow-500"
-                              : "bg-red-500"
-                          : "bg-gray-200"
-                      }`}
-                    />
-                  ))}
-                </div>
-                {passwordStrength.feedback.length > 0 && (
-                  <div className="text-xs text-muted-foreground">
-                    Necessário: {passwordStrength.feedback.join(", ")}
-                  </div>
-                )}
+                <PasswordStrengthBar score={passwordStrength.score} />
+                <PasswordFeedback feedback={passwordStrength.feedback} />
               </div>
             )}
 
