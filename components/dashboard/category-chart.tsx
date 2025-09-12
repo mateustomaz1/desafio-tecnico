@@ -7,6 +7,14 @@ import { useMetricsStore } from "@/lib/store"
 export function CategoryChart() {
   const { categoryData } = useMetricsStore()
 
+  const colors = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+  ]
+
   return (
     <Card className="col-span-3">
       <CardHeader>
@@ -23,11 +31,12 @@ export function CategoryChart() {
               labelLine={false}
               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               outerRadius={80}
-              fill="#8884d8"
+              stroke="var(--border)" 
+              strokeWidth={2}
               dataKey="value"
             >
               {categoryData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>
             <Tooltip
@@ -37,7 +46,10 @@ export function CategoryChart() {
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.color }} />
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: colors[payload[0].index % colors.length] }}
+                        />
                         <span className="font-medium">{data.name}</span>
                       </div>
                       <div className="text-sm text-muted-foreground">{data.value}% dos produtos</div>

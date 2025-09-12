@@ -16,17 +16,17 @@ export function SalesChart() {
       <CardContent className="pl-2">
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={salesData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /> 
+            <XAxis dataKey="month" stroke="var(--foreground)" fontSize={12} tickLine={false} axisLine={false} />
             <YAxis
-              stroke="#888888"
+              stroke="var(--foreground)"
               fontSize={12}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}`}
             />
             <Tooltip
-              content={({ active, payload, label }) => {
+              content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
@@ -37,7 +37,7 @@ export function SalesChart() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">Produtos</span>
-                          <span className="font-bold">{payload[1].value}</span>
+                          <span className="font-bold text-muted-foreground">{payload[1].value}</span>
                         </div>
                       </div>
                     </div>
@@ -46,8 +46,8 @@ export function SalesChart() {
                 return null
               }}
             />
-            <Bar dataKey="sales" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="products" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="sales" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="products" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
