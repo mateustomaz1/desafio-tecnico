@@ -124,7 +124,6 @@ class ApiClient {
     return response.json()
   }
 
-  // Auth endpoints
   async login(data: LoginRequest): Promise<AuthResponse> {
     return this.request<AuthResponse>("/auth/login", {
       method: "POST",
@@ -145,7 +144,6 @@ class ApiClient {
     })
   }
 
-  // Products endpoints
   async getProducts(): Promise<Product[]> {
     if (typeof window !== "undefined") {
       const localProducts = localStorage.getItem("local-products")
@@ -163,7 +161,6 @@ class ApiClient {
       }
     }
 
-    // Fallback to API call if not found locally
     return this.request<{ data: Product }>(`/products/${id}`)
   }
 
@@ -198,7 +195,6 @@ class ApiClient {
       }
     }
 
-    // Fallback to API call if product not found locally
     return this.request<Product>(`/products/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
@@ -212,7 +208,6 @@ class ApiClient {
       localStorage.setItem("local-products", JSON.stringify(filteredProducts))
     }
 
-    // Try API call as well (may fail if product doesn't exist on server)
     try {
       return await this.request<{ codeIntern: string; message: string }>(`/products/${id}`, {
         method: "DELETE",
@@ -254,7 +249,6 @@ class ApiClient {
       })
     }
 
-    // Fallback to API call
     const formData = new FormData()
     formData.append("thumbnail", thumbnail)
 
@@ -281,3 +275,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient()
+
