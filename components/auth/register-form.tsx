@@ -14,6 +14,7 @@ import { useAuthStore, useUIStore } from "@/lib/store"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Loader2, CheckCircle, XCircle } from "lucide-react"
 
+// Helper: Password strength bar
 function PasswordStrengthBar({ score }: { score: number }) {
   const getBarColor = (level: number) => {
     if (score < level) return "bg-gray-200"
@@ -31,11 +32,13 @@ function PasswordStrengthBar({ score }: { score: number }) {
   )
 }
 
+// Helper: Password feedback
 function PasswordFeedback({ feedback }: { feedback: string[] }) {
   if (!feedback.length) return null
   return <div className="text-xs text-muted-foreground">Necessário: {feedback.join(", ")}</div>
 }
 
+// Helper: Phone fields
 function PhoneFields({
   register,
   errors,
